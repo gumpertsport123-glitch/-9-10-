@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><title>Своя игра</title>
+<style>
+:root{--bg:#0b1a4a;--c:#1b3a9c;--g:#ffd34d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#fff;font-family:Segoe UI,Arial,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+button{font:inherit;font-size:14px;padding:6px 12px;border:0;border-radius:6px;background:#3b5bdb;color:#fff;cursor:pointer}
+button:hover{background:#4c6ef5}
+.ok{background:#2f9e44}.no{background:#c92a2a}
+#top{padding:6px;background:#06103a;display:flex;gap:6px;flex-wrap:wrap}
+#board{flex:1;display:grid;gap:6px;padding:8px;min-height:0}
+.h{background:var(--c);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:2vw;padding:4px;text-transform:uppercase}
+.k{background:var(--c);color:var(--g);font-size:4vw;font-weight:800;display:flex;align-items:center;justify-content:center}
+.T .k{cursor:pointer}.T .k:hover{background:#2a50cc}
+.k.u{background:#0e2260;color:transparent;cursor:default}
+#teams{display:flex;gap:8px;padding:8px}
+.t{flex:1;background:#06103a;border:3px solid transparent;text-align:center;padding:6px;font-size:1.8vw}
+.t b{display:block;font-size:3vw;color:var(--g)}
+.t.a{border-color:var(--g)}
+#q{position:fixed;inset:0;background:var(--c);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4vw;text-align:center;gap:2vw}
+#q .m{font-size:1.6vw;opacity:.8}
+#q .qt{font-size:4vw}
+#q .an{font-size:3.5vw;color:var(--g)}
+.tn{font-size:1.8vw;background:#000a;padding:10px 20px;border-radius:8px;color:#9f9}
+.bt{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ed{position:fixed;inset:0;background:#fff;color:#111;overflow:auto;padding:16px}
+.ed input{font:inherit;padding:4px;margin:2px;border:1px solid #999;border-radius:4px}
+.ed .cat{border:2px solid #3b5bdb;border-radius:8px;padding:8px;margin:10px 0}
+.ed .p{width:70px}.ed .w{width:38%}.ed .a2{width:25%}
+body{background:radial-gradient(ellipse at 30% 0%,#1d2aa8 0%,#0a1060 45%,#03062b 100%)}
+#board{gap:5px;padding:10px 14px}
+.h{background:linear-gradient(#171c52,#0d1140);border:2px solid #2e3578;font-size:1.9vw;letter-spacing:.04em;text-shadow:0 2px 6px #000;border-radius:4px}
+.k{background:linear-gradient(#1a2058,#0e1342);border:2px solid #2e3578;border-radius:4px;color:#fff;font-size:3.8vw;text-shadow:0 3px 8px #000;transition:transform .15s,filter .15s,opacity .5s}
+.T .k:not(.u):hover{transform:scale(1.05);filter:brightness(1.5);z-index:2}
+.k.u{opacity:.25}
+.in .h,.in .k{animation:cin .5s both}
+@keyframes cin{from{opacity:0;transform:scale(.6) translateY(20px)}to{opacity:1;transform:none}}
+#teams{justify-content:center;gap:14px;padding:6px 10px 12px}
+.t{flex:0 0 21vw;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"av nm" "av sb";align-items:center;column-gap:12px;text-align:left;background:linear-gradient(#141a55,#0a0e3a);border:2px solid #2e3578;border-radius:10px;padding:8px 12px;font-size:1.5vw;transition:.25s}
+.av{grid-area:av;font-size:2.8vw;width:5vw;height:5vw;background:#0004;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.nm{grid-area:nm;font-weight:700}
+.sb{grid-area:sb;background:#050830;border-radius:6px;text-align:center;font-size:2.4vw;font-weight:800;color:var(--g);padding:2px}
+.t.a{border-color:var(--g);box-shadow:0 0 22px #ffd34d99;transform:translateY(-6px)}
+.sb.up{animation:fu .7s}.sb.dn{animation:fd .7s}
+@keyframes fu{50%{background:#2f9e44;transform:scale(1.12)}}
+@keyframes fd{50%{background:#c92a2a;transform:scale(1.12)}}
+#q{z-index:20;background:radial-gradient(ellipse at center,#2430b8,#0a1060 80%);border-bottom:3px solid #2e3578}
+#q.pop{animation:pop .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{transform:scale(.12);opacity:0}to{transform:none;opacity:1}}
+#q .qt{text-shadow:0 3px 10px #000;max-width:85%}
+#q .m{font-size:1.8vw;letter-spacing:.08em;text-transform:uppercase}
+.an.fx{animation:rev .6s}
+@keyframes rev{from{opacity:0;transform:translateY(30px) scale(.8)}to{opacity:1;transform:none}}
+.bag{font-size:10vw;animation:wob 1.2s infinite}
+@keyframes wob{50%{transform:rotate(-10deg) scale(1.1)}}
+#bn{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;font-size:9vw;font-weight:900;color:var(--g);background:radial-gradient(#2430b8,#03062b);animation:bn 2.1s forwards;pointer-events:none;text-shadow:0 4px 20px #000}
+@keyframes bn{0%{opacity:0;transform:scale(.5)}20%,80%{opacity:1;transform:none}100%{opacity:0;transform:scale(1.2)}}
+.fq{display:flex;flex-direction:column;gap:6px;min-height:0;height:100%}
+.fq .h{font-size:3vw}
+.fn{flex:1;animation:cin .4s both}
+.xx{opacity:.15;text-decoration:line-through;transition:.4s}
+.T .fn:not(.xx):hover{filter:brightness(1.5);cursor:pointer}
+.m2{text-align:center;font-size:1.8vw;padding:6px}
+.fq .qt{font-size:3.6vw;text-align:center;margin:auto;max-width:85%;text-shadow:0 3px 10px #000}
+.fq .an{font-size:3vw;color:var(--g);text-align:center}
+.fq .tn,.fq .bt{align-self:center}
+.win{margin:auto;text-align:center;font-size:4.5vw;font-weight:800;color:var(--g);animation:rev .8s}
+.win div{font-size:10vw;animation:wob 1.2s infinite}
+.ed{z-index:60}.ed .sk{position:sticky;top:0;background:#fff;padding:6px 0;z-index:2;border-bottom:2px solid #3b5bdb;margin-bottom:8px}
+#st,#iv{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 0%,#1d2aa8,#0a1060 45%,#03062b);overflow:hidden}
+#st{z-index:90}#iv{z-index:80}
+#st button{font-size:5vw;padding:2vw 6vw;border-radius:20px;background:linear-gradient(#ffd34d,#f59f00);color:#1b1b4a;font-weight:900;box-shadow:0 0 40px #ffd34daa;animation:pls 1.6s infinite}
+@keyframes pls{50%{transform:scale(1.07)}}
+.mq{position:absolute;inset:0}
+.mt{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;gap:5vh;animation:sc linear forwards}
+.mt span{font-size:5vw;font-weight:800;color:#fff;text-transform:uppercase;text-shadow:0 4px 12px #000;text-align:center}
+@keyframes sc{from{transform:translateY(100vh)}to{transform:translateY(-100%)}}
+.rn{font-size:10vw;font-weight:900;color:var(--g);text-shadow:0 4px 20px #000;animation:bn 2.3s forwards}
+.th{font-size:6vw;font-weight:800;color:#fff;text-transform:uppercase;text-align:center;padding:0 4vw;text-shadow:0 4px 14px #000;animation:rev .9s both}
+</style></head><body>
+<div id="top"></div><div id="board"></div><div id="teams"></div><div id="ov"></div>
+<script>
+const mk=(n,a,m=1)=>({n,q:a.map((x,i)=>({p:(i+1)*100*m,q:x[0],a:x[1],t:x[2]||0}))});
+const R2=[mk('Степени и корни',[['Вычислите 2⁵','32'],['Вычислите √144','12'],['Упростите √50','5√2'],['Вычислите 27^(2/3)','9'],['Решите √(x+2)=x','x = 2']],2),
+mk('Тригонометрия',[['Чему равен sin 30°?','1/2'],['Чему равен tg 45°?','1'],['Чему равно sin²α+cos²α?','1'],['Сколько радиан в 180°?','π'],['Решите sin x=1','π/2+2πk']],2),
+mk('Векторы и координаты',[['Расстояние от (0;0) до (3;4)','5'],['Середина отрезка A(2;4), B(6;8)','(4; 6)'],['Длина вектора (6; 8)','10',2],['Скалярное произведение (1;2)·(3;−1)','1'],['Уравнение окружности: центр (1;−2), радиус 3','(x−1)²+(y+2)²=9']],2)];
+const R3=[mk('Комбинаторика и вероятность',[['Сколькими способами можно расставить 3 книги?','6'],['Чему равно C(5,2)?','10'],['Вероятность выпадения 6 на кубике','1/6'],['Вероятность двух орлов при двух бросках','1/4'],['Сколько диагоналей у выпуклого шестиугольника?','9']],3),
+mk('Логарифмы и производная',[['Чему равен log₂ 8?','3'],['Производная x³','3x²'],['Чему равно lg 100 + lg 10?','3'],['Производная sin x','cos x'],['Угловой коэффициент касательной к y=x² в точке x=3','6']],3),
+mk('Стереометрия',[['Сколько граней у куба?','6'],['Объём куба с ребром 3','27'],['Объём шара радиуса 3','36π',1],['Диагональ куба с ребром 1','√3'],['Полная поверхность цилиндра r=1, h=2','6π']],3)];
+const FIN=[{n:'Алгебра',q:'Сколько действительных корней у уравнения x²+1=0?',a:'Ни одного'},{n:'Геометрия',q:'Сколько осей симметрии у квадрата?',a:'4'},{n:'Числа',q:'Округлите π до сотых',a:'3,14'},{n:'Функции',q:'Как называется график функции y=1/x?',a:'Гипербола'},{n:'Фигуры',q:'Сколько рёбер у куба?',a:'12'}];
+const EX=[[mk('Числа и дроби',[['Вычислите 1/2+1/3','5/6'],['Сколько будет 15% от 200?','30'],['Найдите НОД(12; 18)','6'],['Сколько простых чисел меньше 20?','8 (2, 3, 5, 7, 11, 13, 17, 19)'],['Запишите 0,(6) обыкновенной дробью','2/3']])],
+[mk('Планиметрия',[['Сумма углов выпуклого четырёхугольника','360°'],['Площадь трапеции: основания 4 и 6, высота 5','25'],['Чему равен c² по теореме косинусов?','a²+b²−2ab·cos C'],['Радиус вписанной окружности квадрата со стороной 6','3'],['Биссектриса треугольника делит противоположную сторону в отношении…','Прилежащих сторон']],2),
+mk('Функции и графики',[['Где график y=2x−1 пересекает ось Oy?','(0; −1)'],['Нули функции y=x²−4','−2 и 2'],['Область значений y=x²+1','[1; +∞)'],['Наименьшее значение y=x²−4x+7','3'],['Как сдвинется график при переходе от f(x) к f(x−2)?','Вправо на 2']],2),
+mk('Системы и задачи',[['Решите систему x+y=5, x−y=1','(3; 2)'],['Товар за 800 ₽ подешевел на 25%. Новая цена?','600 ₽'],['Сколько кг соли в 200 кг 15%-го раствора?','30 кг'],['Сумма двух чисел 10, произведение 21. Найдите числа','3 и 7'],['2 ч со скоростью 60 км/ч и 3 ч со скоростью 80 км/ч. Средняя скорость?','72 км/ч']],2)],
+[mk('Тригонометрические уравнения',[['Решите cos x=0','π/2+πk'],['Решите tg x=1','π/4+πk'],['Чему равен sin 2α?','2 sin α cos α'],['Выразите cos 2α через cos α','2cos²α−1'],['Вычислите sin 15°·cos 15°','1/4']],3),
+mk('Производная',[['Производная константы','0'],['Производная y=x²+3x','2x+3'],['Производная eˣ','eˣ'],['Как по знаку производной найти точку максимума?','Производная меняет знак с «+» на «−»'],['Наибольшее значение y=−x²+4x','4']],3),
+mk('Неравенства и модули',[['Решите |x−1|=2','x = −1 или x = 3'],['Решите x²<9','(−3; 3)'],['Решите (x−1)(x+2)>0','(−∞; −2) ∪ (1; +∞)'],['Область определения y=log₂(x−3)','x > 3'],['Решите log₂x + log₂(x−2) = 3','x = 4']],3)]];
+const DEF=()=>({
+rounds:[[
+mk('Функции',[['Найдите f(2), если f(x)=2x²−3','5'],['Чему равна абсцисса вершины параболы y=x²−6x+5?','3'],['Область определения y=√(x−4)','x ≥ 4, то есть [4; +∞)'],['Чётной или нечётной является функция y=x³+x?','Нечётной'],['Наименьший положительный период y=sin x','2π']]),
+mk('Уравнения и неравенства',[['Корни уравнения x²−5x+6=0','2 и 3'],['Чему равен дискриминант x²−4x+1=0?','12'],['Решите неравенство |x|<3','(−3; 3)'],['Сумма корней 2x²−6x+1=0','3 (по теореме Виета)'],['Решите 2ˣ=1/8','x = −3']]),
+mk('Прогрессии',[['a₁=2, d=3. Найдите a₃','8'],['b₁=3, q=2. Найдите b₄','24'],['Сумма натуральных чисел от 1 до 10','55'],['Сумма бесконечно убывающей геом. прогрессии b₁=6, q=1/2','12'],['Арифм. прогрессия: a₁=3, a₅=11. Найдите d','2']]),
+mk('Треугольники',[['Сумма углов треугольника','180°'],['Катеты 6 и 8. Найдите гипотенузу','10'],['Площадь равностороннего треугольника со стороной 2','√3',1],['В каком отношении медианы делятся точкой пересечения?','2:1, считая от вершины'],['Стороны 13, 14, 15. Найдите площадь','84']]),
+mk('Окружность и многоугольники',[['Длина окружности радиуса 3','6π'],['Сумма углов выпуклого шестиугольника','720°'],['Вписанный угол опирается на дугу 80°. Чему он равен?','40°'],['Гипотенуза прямоугольного треугольника 10. Радиус описанной окружности?','5'],['Площадь правильного шестиугольника со стороной 2','6√3']])
+],R2,R3],fin:FIN,rd:0,ph:0,auc:null,fm:null,
+teams:[{n:'Команда 1',s:0},{n:'Команда 2',s:0},{n:'Команда 3',s:0}],used:{},cur:null,ans:false,act:0});
+const T=!location.search.includes('display');
+let S;try{S=JSON.parse(localStorage.sg)}catch(e){}
+if(S&&!S.rounds){const o=S,n=DEF();n.rounds[0]=o.data;n.teams=o.teams||n.teams;S=n}
+if(!S)S=DEF();
+const D=()=>S.rounds[S.rd];
+const SPC=[[[0,3],[2,1],[3,2]],[[0,1],[1,3],[2,4]],[[0,2],[1,3],[2,2]]],SPA=[[[1,2],[2,4],[4,3]],[[0,3],[1,1],[2,2]],[[0,4],[1,1],[2,0]]];
+if((S.v||0)<2){S.rounds.forEach((R,k)=>{R.forEach(c=>c.q.forEach(q=>q.t=0));SPC[k].forEach(([c,r])=>{if(R[c]&&R[c].q[r])R[c].q[r].t=1});SPA[k].forEach(([c,r])=>{if(R[c]&&R[c].q[r])R[c].q[r].t=2})});S.v=2;if(T)localStorage.sg=JSON.stringify(S)}
+if(S.v<3){S.rounds.forEach((R,k)=>{if(R.length<6)R.push(...EX[k].slice(0,6-R.length))});S.v=3;if(T)localStorage.sg=JSON.stringify(S)}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const save=()=>{if(T)localStorage.sg=JSON.stringify(S);render()};
+const rb=()=>'<span style="align-self:center">Раунд:</span>'+[0,1,2,3].map(k=>'<button'+(k==S.rd?' class="ok"':'')+' onclick="goR('+k+')">'+(k<3?k+1:'Суперигра')+'</button>').join('')+'&nbsp;';
+const goR=k=>{S.rd=k;S.cur=null;S.ph=0;S.auc=null;S.ans=false;if(k==3&&!S.fm)S.fm={x:S.fin.map(()=>0),st:0,b:S.teams.map(()=>0),r:{}};save()};
+function banner(){const e=document.createElement('div');e.id='bn';e.textContent=S.rd<3?'РАУНД '+(S.rd+1):'СУПЕРИГРА';document.body.appendChild(e);setTimeout(()=>e.remove(),2100)}
+const strike=i=>{const m=S.fm;m.x[i]=1;if(m.x.filter(v=>!v).length==1)m.st=1;save()};
+const fbet=i=>{const t=S.teams[i],v=+prompt('Ставка «'+t.n+'» (не больше '+Math.max(0,t.s)+')',0);if(v>=0&&v<=Math.max(0,t.s)){S.fm.b[i]=v;save()}else alert('Ставка не может быть больше очков команды')};
+const fres=(i,k)=>{const m=S.fm;if(m.r[i])return;m.r[i]=k;S.teams[i].s+=k*m.b[i];save()};
+const bid=i=>{const a=+prompt('Ставка команды «'+S.teams[i].n+'»',S.auc?S.auc.a+100:100);if(a>0&&(!S.auc||a>S.auc.a)){S.auc={a,t:i};save()}else if(a>0)alert('Ставка должна быть выше текущей')};
+function fin(b){const m=S.fm;b.style.gridTemplateColumns='1fr';b.style.gridTemplateRows='none';b.style.gridAutoRows='minmax(0,1fr)';b.className='';
+ if(!m){b.innerHTML='<div class="fq"><div class="h fn">Суперигра</div></div>';return}
+ const th=S.fin,L=th.map((x,i)=>i).filter(i=>!m.x[i]),t=th[L[0]];let h='';
+ if(m.st==0)h=th.map((x,i)=>'<div class="h fn'+(m.x[i]?' xx':'')+'"'+(T&&!m.x[i]?' onclick="strike('+i+')"':'')+'>'+esc(x.n)+'</div>').join('')+'<div class="m2">Вычёркивает тему: '+esc(S.teams[(th.length-L.length)%S.teams.length].n)+'</div>';
+ else{h='<div class="h fn" style="flex:0 0 14vh">'+esc(t.n)+'</div>';
+  if(m.st==1)h+='<div class="m2">Ставки: '+S.teams.map((x,i)=>esc(x.n)+' — '+(T?m.b[i]:(m.b[i]>0?'✔':'…'))).join(' &nbsp;·&nbsp; ')+'</div>'+(T?'<div class="bt">'+S.teams.map((x,i)=>'<button onclick="fbet('+i+')">Ставка: '+esc(x.n)+'</button>').join('')+'<button class="ok" onclick="S.fm.st=2;save()">Показать вопрос</button></div>':'');
+  if(m.st==2)h+='<div class="qt">'+esc(t.q)+'</div>'+(S.ans?'<div class="an fx">'+esc(t.a)+'</div>':'')+(T?'<div class="tn">Ответ: <b>'+esc(t.a)+'</b></div><div class="bt"><button onclick="S.ans=!S.ans;save()">Ответ классу</button>'+S.teams.map((x,i)=>m.r[i]?'<span>'+esc(x.n)+(m.r[i]>0?' ✔':' ✘')+'</span>':'<button class="ok" onclick="fres('+i+',1)">✔ '+esc(x.n)+' +'+m.b[i]+'</button><button class="no" onclick="fres('+i+',-1)">✘ −'+m.b[i]+'</button>').join('')+'<button onclick="S.fm.st=3;S.ans=false;save()">Итоги</button></div>':'');
+  if(m.st==3){const w=S.teams.reduce((a,x)=>x.s>a.s?x:a,S.teams[0]);h+='<div class="win"><div>🏆</div>Победитель: '+esc(w.n)+'<br>'+w.s+'</div>'}}
+ b.innerHTML='<div class="fq">'+h+'</div>'}
+let lastRd,started=T,busy=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function playIntro(k,all){if(busy)return;busy=1;
+ const L=document.createElement('div');L.id='iv';document.body.appendChild(L);
+ if(all){const n=S.rounds.flatMap(R=>R.map(c=>c.n)),ms=Math.max(6000,n.length*450);
+  L.innerHTML='<div class="mq"><div class="mt" style="animation-duration:'+ms+'ms">'+n.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div></div>';await sleep(ms+300)}
+ L.innerHTML='<div class="rn">'+(k<3?'РАУНД '+(k+1):'СУПЕРИГРА')+'</div>';await sleep(2300);
+ if(k<3&&S.rounds[k])for(const c of S.rounds[k]){L.innerHTML='<div class="th">'+esc(c.n)+'</div>';await sleep(1100)}
+ L.remove();busy=0}
+function startGame(){try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(x){}
+ $('st').remove();started=true;playIntro(S.rd,S.rd==0).then(()=>{intro=true;render()})}
+let intro=true,shown=null,shownA=false,dsc={};
+const AV=['🎓','🦉','🚀','🐯','🦊'];
+function tween(){S.teams.forEach((t,i)=>{const e=$('sc'+i);if(!e)return;const f=dsc[i]===undefined?t.s:dsc[i];
+ if(f===t.s){e.textContent=t.s;dsc[i]=t.s;return}
+ const up=t.s>f,t0=performance.now();e.parentNode.classList.add(up?'up':'dn');
+ (function st(n){const k=Math.min(1,(n-t0)/700);const v=Math.round(f+(t.s-f)*k);e.textContent=v;dsc[i]=v;if(k<1)requestAnimationFrame(st);else dsc[i]=t.s})(t0)})}
+function render(){
+ if(S.rd!==lastRd){lastRd=S.rd;if(T)banner();else if(started)playIntro(S.rd,false).then(()=>{intro=true;render()})}
+ document.body.className=T?'T':'';
+ $('top').style.display=T?'flex':'none';
+ if(T)$('top').innerHTML=rb()+'<button onclick="disp()">🖥 Открыть окно для проектора</button><button onclick="edit()">✏️ Редактор вопросов</button><button onclick="newGame()">↻ Новая игра</button><button onclick="exp()">💾 Сохранить в файл</button><button onclick="$(\'f\').click()">📂 Загрузить из файла</button><input id="f" type="file" accept=".json" hidden onchange="imp(this)"><span style="margin-left:auto;align-self:center;font-size:13px">Это окно — только для учителя</span>';
+ const d=D()||[],R=Math.max(1,...d.map(c=>c.q.length)),b=$('board');
+ if(S.rd==3)fin(b);else{
+ b.style.gridAutoRows='';b.style.gridTemplateColumns='minmax(0,2.3fr) repeat('+R+',minmax(0,1fr))';b.style.gridTemplateRows='repeat('+d.length+',minmax(0,1fr))';b.className=intro?'in':'';
+ let h='';
+ d.forEach((c,i)=>{h+='<div class="h">'+esc(c.n)+'</div>';for(let r=0;r<R;r++){const q=c.q[r];const dl=' style="animation-delay:'+((i+r)*80)+'ms"';
+  if(!q)h+='<div class="k u"></div>';
+  else{const u=S.used[S.rd+'-'+i+'-'+r];h+='<div class="k'+(u?' u':'')+'"'+dl+(T&&!u?' onclick="open_('+i+','+r+')"':'')+'>'+q.p+'</div>'}}});
+ b.innerHTML=h;intro=false;}
+ $('teams').innerHTML=S.teams.map((t,i)=>'<div class="t'+(i==S.act?' a':'')+'" '+(T?'onclick="S.act='+i+';save()" ondblclick="ren('+i+')"':'')+'><div class="av">'+AV[i%5]+'</div><div class="nm">'+esc(t.n)+'</div><div class="sb" '+(T?'onclick="event.stopPropagation();sc('+i+')"':'')+'><span id="sc'+i+'">'+(dsc[i]===undefined?t.s:dsc[i])+'</span></div></div>').join('');tween();
+ const o=$('ov');
+ if(S.cur&&S.rd<3){const c=d[S.cur.c],q=c.q[S.cur.r],ph=S.ph||0;
+ const key=S.cur.c+'-'+S.cur.r+'-'+ph,pop=key!==shown,popA=S.ans&&!shownA;shown=key;shownA=S.ans;
+ const ox=(2.3+S.cur.r+.5)/(2.3+R)*100,oy=(S.cur.c+.5)/d.length*100,pr=S.auc?S.auc.a:q.p;
+ const tb=f=>S.teams.map((t,i)=>f(t,i)).join('');let body,ctl='';
+ if(ph==1){body='<div class="bag">🐱</div><div class="qt">КОТ В МЕШКЕ</div><div class="m">Команда «'+esc(S.teams[S.act].n)+'» передаёт вопрос другой команде</div>';
+  ctl=tb((t,i)=>i==S.act?'':'<button onclick="S.act='+i+';S.ph=0;save()">Передать: '+esc(t.n)+'</button>')}
+ else if(ph==2){body='<div class="bag">🔨</div><div class="qt">АУКЦИОН</div><div class="m">'+(S.auc?'Ставка: '+S.auc.a+' — '+esc(S.teams[S.auc.t].n):'Ставок пока нет')+'</div>';
+  ctl=tb((t,i)=>'<button onclick="bid('+i+')">Ставка: '+esc(t.n)+'</button>')+(S.auc?'<button class="ok" onclick="S.act=S.auc.t;S.ph=0;save()">Начать вопрос</button>':'')}
+ else{body='<div class="qt">'+esc(q.q)+'</div>'+(S.ans?'<div class="an'+(popA?' fx':'')+'">'+esc(q.a)+'</div>':'');
+  ctl='<button onclick="S.ans=!S.ans;save()">Показать/скрыть ответ классу</button><button class="ok" onclick="ans(1)">✔ Верно: '+esc(S.teams[S.act].n)+' +'+pr+'</button><button class="no" onclick="ans(-1)">✘ Неверно: −'+pr+'</button><button onclick="closeQ()">Закрыть (никто не ответил)</button>'}
+ o.innerHTML='<div id="q" class="'+(pop?'pop':'')+'" style="transform-origin:'+ox+'% '+oy+'%"><div class="m">'+esc(c.n)+' — '+pr+'</div>'+body+(T?'<div class="tn">'+(ph?'Вопрос: '+esc(q.q)+'<br>':'')+'Ответ (видите только вы): <b>'+esc(q.a)+'</b></div><div class="bt">'+ctl+'</div>':'')+'</div>';
+ o.firstChild.style.bottom=$('teams').offsetHeight+'px';
+ }else{o.innerHTML='';shown=null;shownA=false}
+}
+const open_=(c,r)=>{S.cur={c,r};S.ans=false;S.auc=null;S.ph=D()[c].q[r].t||0;save()};
+const done=()=>D().every((c,i)=>c.q.every((q,j)=>S.used[S.rd+'-'+i+'-'+j]));
+const closeQ=()=>{if(S.cur)S.used[S.rd+'-'+S.cur.c+'-'+S.cur.r]=1;S.cur=null;S.ans=false;S.ph=0;S.auc=null;save();if(S.rd<3&&done()){const k=S.rd;setTimeout(()=>{if(S.rd==k&&!S.cur)goR(k+1)},1500)}};
+function ans(k){const q=D()[S.cur.c].q[S.cur.r],pr=S.auc?S.auc.a:q.p;S.teams[S.act].s+=k*pr;if(k>0||S.auc)closeQ();else save()}
+const ren=i=>{const n=prompt('Название команды',S.teams[i].n);if(n){S.teams[i].n=n;save()}};
+const sc=i=>{const n=prompt('Очки команды «'+S.teams[i].n+'»',S.teams[i].s);if(n!==null&&!isNaN(+n)){S.teams[i].s=+n;save()}};
+const disp=()=>window.open(location.pathname+'?display','sg_display','width=1280,height=720');
+const newGame=()=>{if(confirm('Начать заново? Очки, раунды и закрытые вопросы сбросятся.')){S.used={};S.cur=null;S.rd=0;S.ph=0;S.auc=null;S.fm=null;S.ans=false;S.teams.forEach(t=>t.s=0);save()}};
+const exp=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({rounds:S.rounds,fin:S.fin},null,1)],{type:'application/json'}));a.download='svoya_igra_voprosy.json';a.click()};
+const imp=el=>{const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.rounds){S.rounds=o.rounds;if(o.fin)S.fin=o.fin}else S.rounds[0]=o;S.used={};S.cur=null;S.fm=null;save()}catch(e){alert('Не удалось прочитать файл')}};r.readAsText(f)};
+/* ---- редактор ---- */
+let ER=0;
+function edit(){
+ const inp=(o,k,v,c)=>'<input class="'+c+'" '+o+' data-k="'+k+'" value="'+esc(v)+'">';
+ let h='<div class="ed"><div class="sk"><h2 style="margin:0 0 6px">Редактор вопросов</h2>'+[0,1,2,3].map(k=>'<button '+(k==ER?'class="ok"':'')+' onclick="ER='+k+';edit()">'+(k<3?'Раунд '+(k+1):'Суперигра')+'</button> ').join('')+'<button class="ok" onclick="document.querySelector(\'.ed\').remove();S.cur=null;save()">← Вернуться к игре</button></div>';
+ if(ER==3){h+=' <button onclick="S.fin.push({n:\'Тема\',q:\'\',a:\'\'});edit()">+ Добавить тему</button><p>Суперигра: тема · вопрос · ответ. Изменения сохраняются сразу.</p>';
+  S.fin.forEach((c,i)=>{const o='data-f="1" data-i="'+i+'"';h+='<div>'+inp(o,'n',c.n,'a2')+inp(o,'q',c.q,'w')+inp(o,'a',c.a,'a2')+'<button class="no" onclick="S.fin.splice('+i+',1);edit()">×</button></div>'})}
+ else{h+=' <button onclick="S.rounds[ER].push({n:\'Новая тема\',q:[{p:100,q:\'\',a:\'\',t:0}]});edit()">+ Добавить тему</button><p>Столбцы: очки · вопрос · ответ · тип (обычный, «Кот в мешке», аукцион). Изменения сохраняются сразу.</p>';
+  S.rounds[ER].forEach((c,i)=>{h+='<div class="cat"><input data-i="'+i+'" data-k="n" value="'+esc(c.n)+'" style="font-weight:bold;width:40%"> <button class="no" onclick="if(confirm(\'Удалить тему?\')){S.rounds[ER].splice('+i+',1);edit()}">Удалить тему</button>';
+   c.q.forEach((q,j)=>{const o='data-i="'+i+'" data-j="'+j+'"';h+='<div>'+inp(o,'p',q.p,'p')+inp(o,'q',q.q,'w')+inp(o,'a',q.a,'a2')+'<select '+o+' data-k="t">'+['Обычный','Кот в мешке','Аукцион'].map((x,k)=>'<option value="'+k+'"'+((q.t||0)==k?' selected':'')+'>'+x+'</option>').join('')+'</select><button class="no" onclick="S.rounds[ER]['+i+'].q.splice('+j+',1);edit()">×</button></div>'});
+   h+='<button onclick="var p=S.rounds[ER]['+i+'].q;p.push({p:(p.length+1)*100,q:\'\',a:\'\',t:0});edit()">+ вопрос</button></div>'})}
+ const old=document.querySelector('.ed');if(old)old.remove();
+ const w=document.createElement('div');w.innerHTML=h+'</div>';document.body.appendChild(w.firstChild);
+ document.querySelector('.ed').oninput=e=>{const t=e.target.dataset;if(!t.k)return;const v=e.target.value;
+  if(t.f)S.fin[t.i][t.k]=v;
+  else{const c=S.rounds[ER][t.i];if(t.k=='n')c.n=v;else c.q[t.j][t.k]=(t.k=='p'||t.k=='t')?(Number(v)||0):v}
+  localStorage.sg=JSON.stringify(S)};
+}
+if(!T)addEventListener('storage',e=>{if(e.key=='sg'&&e.newValue){S=JSON.parse(e.newValue);render()}});
+addEventListener('keydown',e=>{if(T&&e.key=='Escape'&&S.cur&&!document.querySelector('.ed'))closeQ()});
+addEventListener('keydown',e=>{const x=document.querySelector('.ed');if(x&&e.key=='Escape'){x.remove();save()}});
+if(T)S.cur=null;
+if(!T){const e=document.createElement('div');e.id='st';e.innerHTML='<button onclick="startGame()">НАЧАТЬ ИГРУ</button>';document.body.appendChild(e)}
+render();
+</script></body></html>
